@@ -30,26 +30,37 @@ inThisBuild(
   List(
     scalaVersion             := scala212,
     crossScalaVersions       := allScala,
-    organization             := "com.github.ghostdogpr",
-    homepage                 := Some(url("https://github.com/ghostdogpr/caliban")),
+    organization             := "dev.chopsticks",
+    homepage                 := Some(url("https://github.com/shopstic/caliban")),
     licenses                 := List(
       "Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")
     ),
     Test / parallelExecution := false,
     scmInfo                  := Some(
       ScmInfo(
-        url("https://github.com/ghostdogpr/caliban/"),
-        "scm:git:git@github.com:ghostdogpr/caliban.git"
+        url("https://github.com/shopstic/caliban/"),
+        "scm:git:git@github.com:shopstic/caliban.git"
       )
     ),
     developers               := List(
       Developer(
-        "ghostdogpr",
-        "Pierre Ricadat",
-        "ghostdogpr@gmail.com",
-        url("https://github.com/ghostdogpr")
+        id = "nktpro",
+        name = "Jacky Nguyen",
+        email = "nktpro@gmail.com",
+        url = new URL("https://github.com/nktpro/")
+      ),
+      Developer(
+        id = "pwliwanow",
+        name = "Pawel Iwanow",
+        email = "pwliwanow@gmail.com",
+        url = new URL("https://github.com/pwliwanow/")
       )
     ),
+    pgpPassphrase            := sys.env.get("PGP_PASSWORD").map(_.toArray),
+    pgpPublicRing            := file("/tmp/public.asc"),
+    pgpSecretRing            := file("/tmp/secret.asc"),
+    sonatypeCredentialHost   := "s01.oss.sonatype.org",
+    sonatypeRepository       := "https://s01.oss.sonatype.org/service/local",
     ConsoleHelper.welcomeMessage
   )
 )
