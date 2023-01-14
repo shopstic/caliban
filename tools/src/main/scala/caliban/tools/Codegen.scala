@@ -61,7 +61,8 @@ object Codegen {
       formatted                <- if (enableFmt) Formatter.format(code, arguments.fmtPath) else Task.succeed(code)
       paths                    <- ZIO.foreach(formatted) { case (objectName, objectCode) =>
                                     val path =
-                                      if (splitFiles) s"${arguments.toPath.reverse.dropWhile(_ != '/').reverse}$objectName.scala"
+                                      if (splitFiles)
+                                        s"${arguments.toPath.reverse.dropWhile(_ != File.separatorChar).reverse}$objectName.scala"
                                       else arguments.toPath
 
                                     blocking(
@@ -84,7 +85,9 @@ object Codegen {
     else SchemaLoader.fromFile(path)
 
   def getPackageAndObjectName(arguments: Options) = {
-    val s           = ".*(?:scala|play.*?|app)[^/]*/(?:(.*)/)?(.*).scala".r.findFirstMatchIn(arguments.toPath)
+    val s           = ".*(?:scala|play.*?|app)[^/]*/(?:(.*)/)?(.*).scala".r.findFirstMatchIn(
+      arguments.toPath.replace(File.separatorChar, '/')
+    )
     val packageName = arguments.packageName.orElse(s.flatMap(x => Option(x.group(1)).map(_.split("/").mkString("."))))
     val objectName  = arguments.clientName.orElse(s.map(_.group(2))).getOrElse("Client")
     packageName -> objectName
