@@ -4,6 +4,7 @@ import zio.blocking.{ blocking, Blocking }
 import zio.{ RIO, Task, UIO, ZIO }
 
 import java.io.{ File, PrintWriter }
+import java.nio.file.Paths
 
 object Codegen {
 
@@ -61,8 +62,7 @@ object Codegen {
       formatted                <- if (enableFmt) Formatter.format(code, arguments.fmtPath) else Task.succeed(code)
       paths                    <- ZIO.foreach(formatted) { case (objectName, objectCode) =>
                                     val path =
-                                      if (splitFiles)
-                                        s"${arguments.toPath.reverse.dropWhile(_ != File.separatorChar).reverse}$objectName.scala"
+                                      if (splitFiles) Paths.get(arguments.toPath).getParent.resolve(s"$objectName.scala").toString
                                       else arguments.toPath
 
                                     blocking(
@@ -86,7 +86,7 @@ object Codegen {
 
   def getPackageAndObjectName(arguments: Options) = {
     val s           = ".*(?:scala|play.*?|app)[^/]*/(?:(.*)/)?(.*).scala".r.findFirstMatchIn(
-      arguments.toPath.replace(File.separatorChar, '/')
+      arguments.toPath.replace('\\', '/')
     )
     val packageName = arguments.packageName.orElse(s.flatMap(x => Option(x.group(1)).map(_.split("/").mkString("."))))
     val objectName  = arguments.clientName.orElse(s.map(_.group(2))).getOrElse("Client")
